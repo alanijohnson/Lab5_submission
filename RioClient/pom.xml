@@ -23,6 +23,7 @@
 				<version>8.2.0</version>
 				<configuration>
 					<mainClass>poker.app.MainApp</mainClass>
+					 <bundler>EXE</bundler>
 				</configuration>
 			</plugin>
 

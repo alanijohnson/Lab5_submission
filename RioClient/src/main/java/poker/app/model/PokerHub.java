@@ -50,24 +50,46 @@ public class PokerHub extends Hub {
 	protected void messageReceived(int ClientID, Object message) {
 
 		if (message instanceof Action) {
+			Player actPlayer = (Player) ((Action) message).getPlayer();
+			if (((Action) message).getAction() == eAction.Sit) {
+				HubPokerTable.AddPlayerToTable(actPlayer);
+				resetOutput();
+				sendToAll(HubPokerTable);
+			} else if
+
+			(((Action) message).getAction() == eAction.Leave) {
+				HubPokerTable.RemovePlayerFromTable(actPlayer);
+				resetOutput();
+				sendToAll(HubPokerTable);
+
+			}
 			
-			//TODO: If the Action = StartGame, start the game...
-			//		Create an instance of GamePlay, set all the parameters
-			
-			//TODO: If Action = Sit, add the player to the table
-			
-			//TODO: If Action = Leave, remove the player from the table
-			
-			//TODO: If Action = Sit or Leave, send the Table
-			//		back to the client
-			
-			//TODO: If Action = GameState, send HubGamePlay 
-			//		back to the client
+			else if
+
+			(((Action) message).getAction() == eAction.TableState) {
+
+				resetOutput();
+				sendToAll(HubPokerTable);
+
+			}
+			// TODO: If the Action = StartGame, start the game...
+			// Create an instance of GamePlay, set all the parameters
+
+			// TODO: If Action = Sit, add the player to the table
+
+			// TODO: If Action = Leave, remove the player from the table
+
+			// TODO: If Action = Sit or Leave, send the Table
+			// back to the client
+
+			// TODO: If Action = GameState, send HubGamePlay
+			// back to the client
 		}
 
-		System.out.println("Message Received by Hub");
-		
-		sendToAll("Sending Message Back to Client");
+		/*
+		 * System.out.println("Message Received by Hub"); resetOutput();
+		 * sendToAll("Sending Message Back to Client");
+		 */
 	}
 
 }

@@ -1,6 +1,8 @@
 package poker.app.view;
 
 import java.net.URL;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javafx.animation.FadeTransition;
@@ -18,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import poker.app.MainApp;
 import pokerBase.Action;
+import pokerBase.Player;
 import pokerBase.Table;
 import pokerEnums.eAction;
 import pokerEnums.ePlayerPosition;
@@ -29,6 +32,15 @@ public class PokerTableController implements Initializable {
 
 	public PokerTableController() {
 	}
+
+	@FXML
+	private Label lblPlayerPos1;
+	@FXML
+	private Label lblPlayerPos2;
+	@FXML
+	private Label lblPlayerPos3;
+	@FXML
+	private Label lblPlayerPos4;
 
 	@FXML
 	private ImageView imgViewDealerButtonPos1;
@@ -79,11 +91,15 @@ public class PokerTableController implements Initializable {
 	@FXML
 	private HBox hboxP4Cards;
 
-
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		imgViewDealerButtonPos3.setVisible(true);
-		imgViewDealerButtonPos4.setVisible(true);		
+		imgViewDealerButtonPos4.setVisible(true);
+
+		lblPlayerPos1.setText("1");
+		lblPlayerPos2.setText("2");
+		lblPlayerPos3.setText("3");
+		lblPlayerPos4.setText("4");
 	}
 
 	public void setMainApp(MainApp mainApp) {
@@ -122,10 +138,10 @@ public class PokerTableController implements Initializable {
 			iPlayerPosition = 0;
 		}
 
-		//	Set the PlayerPosition in the Player
+		// Set the PlayerPosition in the Player
 		mainApp.getPlayer().setiPlayerPosition(iPlayerPosition);
 
-		//	Build an Action message
+		// Build an Action message
 		Action act = new Action(btnSitLeave.isSelected() ? eAction.Sit : eAction.Leave, mainApp.getPlayer());
 
 		// Send the Action to the Hub
@@ -136,29 +152,83 @@ public class PokerTableController implements Initializable {
 		System.out.println("Message received by PokerTableController: " + strMessage);
 	}
 
+	private Label getPlayerLabel(int iPosition) {
+		switch (iPosition) {
+		case 1:
+			return lblPlayerPos1;
+		case 2:
+			return lblPlayerPos2;
+		case 3:
+			return lblPlayerPos3;
+		case 4:
+			return lblPlayerPos4;
+		default:
+			return null;
+		}
+	}
+
+	private ToggleButton getSitLeave(int iPosition) {
+		switch (iPosition) {
+		case 1:
+			return btnPos1SitLeave;
+		case 2:
+			return btnPos2SitLeave;
+		case 3:
+			return btnPos3SitLeave;
+		case 4:
+			return btnPos4SitLeave;
+		default:
+			return null;
+		}
+
+	}
+
 	public void Handle_TableState(Table HubPokerTable) {
 
-		//TODO: If this message is called, that means there
-		//		was a change to the state of the Table (player
-		//		probably ran 'sit' or 'leave'
-		//		The Table was updated, you just have to refresh the
-		//		UI controls to show the current state of the 
-		//		Table object
-		
-		//TODO: run the 'getHashPlayers' method, iterate 
-		//		for all players and update the player label
-		//		and state of the sit/leave button.
+		lblPlayerPos1.setText("");
+		lblPlayerPos2.setText("");
+		lblPlayerPos3.setText("");
+		lblPlayerPos4.setText("");
+		boolean bSeated = false;
 
-		//		Example: Joe sits at Position 1
-		//		Joe should see the 'Sit' button in position 1 in the
-		//		'pressed in' state, and with 
+		for (int a = 1; a < 5; a++) {
+			Player p = HubPokerTable.getPlayerByPosition(a);
+			if (p != null) {
+				getPlayerLabel(a).setText(p.getPlayerName());
+
+				if (p.getPlayerID().equals(mainApp.getPlayer().getPlayerID())) {
+					getSitLeave(a).setText("Leave");
+					bSeated = true;
+				} else {
+					getSitLeave(a).setVisible(false);
+				}
+			}
+		}
+
+		//	Note: Players have been seated, set the Sit/Leave text
+		//	based on players already seated.
+		
+		for (int a = 1; a < 5; a++) {
+
+			if (getPlayerLabel(a).getText() == "") {
+				if (bSeated) {
+					getSitLeave(a).setVisible(false);
+				}
+				else
+				{
+					getSitLeave(a).setVisible(true);
+					getSitLeave(a).setText("Sit");
+				}
+			}
+		}
+
 	}
 
 	@FXML
 	void btnStart_Click(ActionEvent event) {
 		// Start the Game
-		//TODO: Create an instance of Action, Action = StartGame
-		//		Send the message to the hub
+		// TODO: Create an instance of Action, Action = StartGame
+		// Send the message to the hub
 	}
 
 	@FXML
@@ -231,6 +301,5 @@ public class PokerTableController implements Initializable {
 
 		ft.play();
 	}
-
 
 }

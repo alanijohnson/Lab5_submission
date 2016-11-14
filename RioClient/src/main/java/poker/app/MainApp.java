@@ -112,6 +112,14 @@ public class MainApp extends Application {
 		initRootLayout();
 
 		showPokerTable();		
+		
+		if (!bStartHub) {
+		
+			Action act = new Action();
+			act.setAction(eAction.TableState);
+			act.setPlayer(this.getPlayer());
+			this.messageSend(act);
+		}
 	}
 
 	public void showClientServer() {
@@ -193,6 +201,9 @@ public class MainApp extends Application {
 	}
 
 	public void EndPoker() {
+		
+		System.out.println("Player quit");
+		
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent t) {
@@ -204,6 +215,13 @@ public class MainApp extends Application {
 
 	@Override
 	public void stop() throws Exception {
+		System.out.println("Stopped");
+		
+		Action act = new Action();
+		act.setAction(eAction.Leave);
+		act.setPlayer(this.getPlayer());
+		this.messageSend(act);
+		
 		//connection.closeConnection();
 	}
 
@@ -252,11 +270,13 @@ public class MainApp extends Application {
 				}
 				else if (message instanceof Table)
 				{
+					System.out.println("Message is table");
 					//TODO: If the message is a Table, run the 
 					//		method Handle_TableState in the 
 					//		pokerController.
+					pokerController.Handle_TableState((Table)message);
 				}
-				pokerController.MessageFromMainApp((String)message);
+				
 			});
 		}
 		
